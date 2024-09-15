@@ -1,0 +1,52 @@
+openapi: 3.0.0
+info:
+  title: Agency Service
+  version: 1.0.0
+  description: Дополнительные операции над объектами Flat.
+servers:
+  - url: http://localhost:8080/agency
+paths:
+  /find-with-balcony/{cheapest}/{with-balcony}:
+    get:
+      summary: Найти самую дешёвую (или дорогую) квартиру с балконом (или без балкона)
+      parameters:
+        - name: cheapest
+          in: path
+          description: Выбрать самую дешёвую или дорогую
+          required: true
+          schema:
+            type: string
+            enum: [cheapest, most_expensive]
+        - name: with-balcony
+          in: path
+          description: Квартира с балконом или без
+          required: true
+          schema:
+            type: string
+            enum: [with-balcony, without-balcony]
+      responses:
+        '200':
+          description: Самая дешёвая/дорогая квартира с балконом/без балкона
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/Flat'
+        '400':
+          description: Некорректные параметры запроса
+        '404':
+          description: Квартира с указанными параметрами не найдена
+        '500':
+          description: Внутренняя ошибка сервера
+  /get-total-cost:
+    get:
+      summary: Рассчитать суммарную стоимость всех квартир
+      responses:
+        '200':
+          description: Общая стоимость всех квартир
+          content:
+            text/plain:
+              schema:
+                type: number
+                format: float
+        '500':
+          description: Внутренняя ошибка сервера

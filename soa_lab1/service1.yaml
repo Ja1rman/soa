@@ -1,0 +1,242 @@
+openapi: 3.0.0
+info:
+  title: Flat Management Service
+  version: 1.0.0
+  description: API для управления коллекцией объектов типа Flat.
+servers:
+  - url: http://localhost:8080/flat-management
+paths:
+  /flats:
+    get:
+      summary: Получить массив объектов Flat
+      parameters:
+        - name: sort
+          in: query
+          description: Поле для сортировки
+          schema:
+            type: string
+        - name: filter
+          in: query
+          description: Поля для фильтрации
+          schema:
+            type: string
+        - name: page
+          in: query
+          description: Номер страницы
+          schema:
+            type: integer
+        - name: size
+          in: query
+          description: Размер страницы
+          schema:
+            type: integer
+      responses:
+        '200':
+          description: Список объектов Flat
+          content:
+            application/json:
+              schema:
+                type: array
+                items:
+                  $ref: '#/components/schemas/Flat'
+        '400':
+          description: Некорректные параметры запроса (например, недопустимые значения сортировки или фильтрации)
+        '500':
+          description: Внутренняя ошибка сервера
+    post:
+      summary: Добавить новый объект Flat
+      requestBody:
+        content:
+          application/json:
+            schema:
+              $ref: '#/components/schemas/Flat'
+        required: true
+      responses:
+        '201':
+          description: Объект Flat создан
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/Flat'
+        '400':
+          description: Некорректные данные в запросе (например, нарушены ограничения целостности данных)
+        '500':
+          description: Внутренняя ошибка сервера
+    put:
+      summary: Обновить объект Flat
+      requestBody:
+        content:
+          application/json:
+            schema:
+              $ref: '#/components/schemas/Flat'
+        required: true
+      responses:
+        '200':
+          description: Объект Flat обновлён
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/Flat'
+        '400':
+          description: Некорректные данные в запросе (например, нарушены ограничения целостности данных)
+        '404':
+          description: Объект Flat не найден
+        '500':
+          description: Внутренняя ошибка сервера
+    delete:
+      summary: Удалить объект Flat
+      parameters:
+        - name: id
+          in: query
+          description: Идентификатор объекта Flat
+          schema:
+            type: integer
+      responses:
+        '204':
+          description: Объект Flat удалён
+        '404':
+          description: Объект Flat не найден
+        '400':
+          description: Некорректные параметры запроса
+        '500':
+          description: Внутренняя ошибка сервера
+  /flats/{id}:
+    get:
+      summary: Получить объект Flat по ИД
+      parameters:
+        - name: id
+          in: path
+          description: Идентификатор объекта Flat
+          required: true
+          schema:
+            type: integer
+      responses:
+        '200':
+          description: Объект Flat
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/Flat'
+        '404':
+          description: Объект Flat не найден
+        '400':
+          description: Некорректные параметры запроса
+        '500':
+          description: Внутренняя ошибка сервера
+  /flats/min-coordinates:
+    get:
+      summary: Вернуть объект с минимальным значением поля coordinates
+      responses:
+        '200':
+          description: Объект с минимальным значением координат
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/Flat'
+        '404':
+          description: Не найдено ни одного объекта
+        '500':
+          description: Внутренняя ошибка сервера
+  /flats/number-of-rooms:
+    get:
+      summary: Вернуть количество объектов с числом комнат больше заданного
+      parameters:
+        - name: minRooms
+          in: query
+          description: Минимальное количество комнат
+          schema:
+            type: integer
+      responses:
+        '200':
+          description: Количество объектов
+          content:
+            text/plain:
+              schema:
+                type: integer
+        '400':
+          description: Некорректные параметры запроса (например, некорректное значение для minRooms)
+        '500':
+          description: Внутренняя ошибка сервера
+  /flats/furnish-less-than:
+    get:
+      summary: Вернуть объекты с furnish меньше заданного
+      parameters:
+        - name: maxFurnish
+          in: query
+          description: Максимальное значение furnish
+          schema:
+            type: string
+            enum: [DESIGNER, NONE, FINE, BAD, LITTLE]
+      responses:
+        '200':
+          description: Список объектов с furnish меньше заданного
+          content:
+            application/json:
+              schema:
+                type: array
+                items:
+                  $ref: '#/components/schemas/Flat'
+        '400':
+          description: Некорректные параметры запроса (например, недопустимое значение furnish)
+        '500':
+          description: Внутренняя ошибка сервера
+components:
+  schemas:
+    Flat:
+      type: object
+      properties:
+        id:
+          type: integer
+          example: 1
+        name:
+          type: string
+          example: "Luxurious Apartment"
+        coordinates:
+          $ref: '#/components/schemas/Coordinates'
+        creationDate:
+          type: string
+          format: date-time
+          example: "2024-09-14T08:30:00"
+        area:
+          type: number
+          format: float
+          example: 120.5
+        numberOfRooms:
+          type: integer
+          example: 3
+        furnish:
+          type: string
+          enum: [DESIGNER, NONE, FINE, BAD, LITTLE]
+        view:
+          type: string
+          enum: [YARD, PARK, NORMAL, GOOD]
+        transport:
+          type: string
+          enum: [FEW, NONE, NORMAL]
+        house:
+          $ref: '#/components/schemas/House'
+    Coordinates:
+      type: object
+      properties:
+        x:
+          type: number
+          format: float
+          example: -142.5
+        y:
+          type: integer
+          example: -902
+    House:
+      type: object
+      properties:
+        name:
+          type: string
+          example: "Sunset Towers"
+        year:
+          type: integer
+          example: 1990
+        numberOfFloors:
+          type: integer
+          example: 10
+        numberOfLifts:
+          type: integer
+          example: 2
