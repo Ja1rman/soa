@@ -33,6 +33,10 @@ paths:
                 $ref: 'service1.yaml#/components/schemas/Flat'
         '400':
           description: Некорректные параметры запроса
+          content:
+            application/json:
+              schema:
+                  $ref: 'service1.yaml#/components/schemas/Error'
         '404':
           description: Квартира с указанными параметрами не найдена
         '500':

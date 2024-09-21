@@ -22,12 +22,14 @@ paths:
             type: string
         - name: page
           in: query
-          description: Номер страницы
+          description: "Номер страницы (Больше 0)"
+          default: 1
           schema:
             type: integer
         - name: size
           in: query
-          description: Размер страницы
+          description: "Размер страницы (Больше 0, Меньше 100)"
+          default: 20
           schema:
             type: integer
       responses:
@@ -40,7 +42,11 @@ paths:
                 items:
                   $ref: '#/components/schemas/Flat'
         '400':
-          description: Некорректные параметры запроса (например, недопустимые значения сортировки или фильтрации)
+          description: Некорректные параметры запроса
+          content:
+            application/json:
+              schema:
+                  $ref: '#/components/schemas/Error'
         '500':
           description: Внутренняя ошибка сервера
     post:
@@ -59,7 +65,11 @@ paths:
               schema:
                 $ref: '#/components/schemas/Flat'
         '400':
-          description: Некорректные данные в запросе (например, нарушены ограничения целостности данных)
+          description: Некорректные данные в запросе
+          content:
+            application/json:
+              schema:
+                  $ref: '#/components/schemas/Error'
         '500':
           description: Внутренняя ошибка сервера
     put:
@@ -79,6 +89,10 @@ paths:
                 $ref: '#/components/schemas/Flat'
         '400':
           description: Некорректные данные в запросе (например, нарушены ограничения целостности данных)
+          content:
+            application/json:
+              schema:
+                  $ref: '#/components/schemas/Error'
         '404':
           description: Объект Flat не найден
         '500':
@@ -98,6 +112,10 @@ paths:
           description: Объект Flat не найден
         '400':
           description: Некорректные параметры запроса
+          content:
+            application/json:
+              schema:
+                  $ref: '#/components/schemas/Error'
         '500':
           description: Внутренняя ошибка сервера
   /flats/{id}:
@@ -106,7 +124,7 @@ paths:
       parameters:
         - name: id
           in: path
-          description: Идентификатор объекта Flat
+          description: Идентификатор объекта Flat (id > 0)
           required: true
           schema:
             type: integer
@@ -121,6 +139,10 @@ paths:
           description: Объект Flat не найден
         '400':
           description: Некорректные параметры запроса
+          content:
+            application/json:
+              schema:
+                  $ref: '#/components/schemas/Error'
         '500':
           description: Внутренняя ошибка сервера
   /flats/min-coordinates:
@@ -143,7 +165,7 @@ paths:
       parameters:
         - name: minRooms
           in: query
-          description: Минимальное количество комнат
+          description: Минимальное количество комнат (Число комнат больше 0)
           schema:
             type: integer
       responses:
@@ -155,6 +177,10 @@ paths:
                 type: integer
         '400':
           description: Некорректные параметры запроса (например, некорректное значение для minRooms)
+          content:
+            application/json:
+              schema:
+                  $ref: '#/components/schemas/Error'
         '500':
           description: Внутренняя ошибка сервера
   /flats/furnish-less-than:
@@ -178,10 +204,26 @@ paths:
                   $ref: '#/components/schemas/Flat'
         '400':
           description: Некорректные параметры запроса (например, недопустимое значение furnish)
+          content:
+            application/json:
+              schema:
+                  $ref: '#/components/schemas/Error'
         '500':
           description: Внутренняя ошибка сервера
 components:
   schemas:
+    Error:
+      type: object
+      properties:
+        error:
+          type: object
+          properties:
+            msg:
+              type: string
+              example: "Указаные неверные значения у полей"
+            fields:
+              type: array
+              example: [name]
     Flat:
       type: object
       properties:
