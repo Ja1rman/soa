@@ -55,7 +55,7 @@ paths:
         content:
           application/json:
             schema:
-              $ref: '#/components/schemas/Flat'
+              $ref: '#/components/schemas/FlatNew'
         required: true
       responses:
         '201':
@@ -72,31 +72,7 @@ paths:
                   $ref: '#/components/schemas/Error'
         '500':
           description: Внутренняя ошибка сервера
-    put:
-      summary: Обновить объект Flat
-      requestBody:
-        content:
-          application/json:
-            schema:
-              $ref: '#/components/schemas/Flat'
-        required: true
-      responses:
-        '200':
-          description: Объект Flat обновлён
-          content:
-            application/json:
-              schema:
-                $ref: '#/components/schemas/Flat'
-        '400':
-          description: Некорректные данные в запросе (например, нарушены ограничения целостности данных)
-          content:
-            application/json:
-              schema:
-                  $ref: '#/components/schemas/Error'
-        '404':
-          description: Объект Flat не найден
-        '500':
-          description: Внутренняя ошибка сервера
+    
     delete:
       summary: Удалить объект Flat
       parameters:
@@ -143,6 +119,38 @@ paths:
             application/json:
               schema:
                   $ref: '#/components/schemas/Error'
+        '500':
+          description: Внутренняя ошибка сервера
+    put:
+      summary: Обновить объект Flat
+      parameters:
+        - name: id
+          in: path
+          description: Идентификатор объекта Flat (id > 0)
+          required: true
+          schema:
+            type: integer
+      requestBody:
+        content:
+          application/json:
+            schema:
+              $ref: '#/components/schemas/FlatNew'
+        required: true
+      responses:
+        '200':
+          description: Объект Flat обновлён
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/Flat'
+        '400':
+          description: Некорректные данные в запросе (например, нарушены ограничения целостности данных)
+          content:
+            application/json:
+              schema:
+                  $ref: '#/components/schemas/Error'
+        '404':
+          description: Объект Flat не найден
         '500':
           description: Внутренняя ошибка сервера
   /flats/min-coordinates:
@@ -239,6 +247,32 @@ components:
           type: string
           format: date-time
           example: "2024-09-14T08:30:00"
+        area:
+          type: number
+          format: float
+          example: 120.5
+        numberOfRooms:
+          type: integer
+          example: 3
+        furnish:
+          type: string
+          enum: [DESIGNER, NONE, FINE, BAD, LITTLE]
+        view:
+          type: string
+          enum: [YARD, PARK, NORMAL, GOOD]
+        transport:
+          type: string
+          enum: [FEW, NONE, NORMAL]
+        house:
+          $ref: '#/components/schemas/House'
+    FlatNew:
+      type: object
+      properties:
+        name:
+          type: string
+          example: "Luxurious Apartment"
+        coordinates:
+          $ref: '#/components/schemas/Coordinates'
         area:
           type: number
           format: float
