@@ -15,7 +15,14 @@ const API_URL = 'https://89.169.129.229';
 
 const parseFlatsFromXml = async (xmlResponse: string): Promise<Flat[]> => {
   const parsedData = await xml2js.parseStringPromise(xmlResponse, { explicitArray: false });
-  return parsedData.Flats.Flat.map((flatData: Flat) => new Flat(
+  
+  // Получаем данные о квартирах
+  const flatsData = parsedData.Flats.Flat;
+
+  // Проверяем, является ли flatsData массивом. Если нет, преобразуем в массив.
+  const flatsArray = Array.isArray(flatsData) ? flatsData : [flatsData];
+
+  return flatsArray.map((flatData: Flat) => new Flat(
     Number(flatData.id),
     flatData.name,
     new Coordinates(Number(flatData.coordinates.x), Number(flatData.coordinates.y)),
@@ -28,6 +35,7 @@ const parseFlatsFromXml = async (xmlResponse: string): Promise<Flat[]> => {
     flatData.house ? new House(Number(flatData.house.numberOfFloors), Number(flatData.house.numberOfLifts), flatData.house.name, Number(flatData.house.year)) : undefined
   ));
 };
+
 
 const fetchFlats = async (page: number, sortFields: string, filterFields: string): Promise<Flat[]> => {
   let filter = '';
