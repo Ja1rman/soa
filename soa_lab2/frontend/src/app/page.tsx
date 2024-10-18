@@ -15,9 +15,14 @@ const API_URL = 'https://89.169.129.229';
 
 const parseFlatsFromXml = async (xmlResponse: string): Promise<Flat[]> => {
   const parsedData = await xml2js.parseStringPromise(xmlResponse, { explicitArray: false });
-  
-  // Получаем данные о квартирах
-  const flatsData = parsedData.Flats.Flat;
+
+  // Извлекаем данные о квартирах
+  const flatsData = parsedData.Flats?.Flat || parsedData.Flat; // Проверяем наличие родительского тега
+
+  // Если flatsData не определены, возвращаем пустой массив
+  if (!flatsData) {
+    return [];
+  }
 
   // Проверяем, является ли flatsData массивом. Если нет, преобразуем в массив.
   const flatsArray = Array.isArray(flatsData) ? flatsData : [flatsData];
@@ -35,6 +40,7 @@ const parseFlatsFromXml = async (xmlResponse: string): Promise<Flat[]> => {
     flatData.house ? new House(Number(flatData.house.numberOfFloors), Number(flatData.house.numberOfLifts), flatData.house.name, Number(flatData.house.year)) : undefined
   ));
 };
+
 
 
 const fetchFlats = async (page: number, sortFields: string, filterFields: string): Promise<Flat[]> => {
@@ -295,7 +301,7 @@ const FlatsTable: React.FC = () => {
   }
 
   if (flats.length === 0) {
-    return <p>Loading...</p>;
+    return <p>"Элементов нет, но вы держитесь"</p>;
   }
   const handleNextPage = () => {
     if (currentPage < totalPages) {
@@ -340,17 +346,17 @@ const FlatsTable: React.FC = () => {
 
     // Reset form fields
     setName('');
-    setX(0);
-    setY(0);
-    setArea(0);
-    setNumberOfRooms(0);
+    setX(undefined);
+    setY(undefined);
+    setArea(undefined);
+    setNumberOfRooms(undefined);
     setAddFurnish(undefined);
     setAddView(undefined);
     setAddTransport(Transport.NONE);
     setHouseName('');
-    setHouseYear(0);
-    setNumberOfFloors(0);
-    setNumberOfLifts(0);
+    setHouseYear(undefined);
+    setNumberOfFloors(undefined);
+    setNumberOfLifts(undefined);
   };
 
 
@@ -435,28 +441,30 @@ const FlatsTable: React.FC = () => {
         />
         <input
           type="number"
-          value={x}
+          step="0.01"
+          value={x !== undefined? x : ""}
           onChange={(e) => setX(Number(e.target.value))}
           placeholder="Coordinate X"
           required
         />
         <input
           type="number"
-          value={y}
+          value={y !== undefined? y : ""}
           onChange={(e) => setY(Number(e.target.value))}
           placeholder="Coordinate Y"
           required
         />
         <input
           type="number"
-          value={area}
+          step="0.01"
+          value={area !== undefined? area : ""}
           onChange={(e) => setArea(Number(e.target.value))}
           placeholder="Area"
           required
         />
         <input
           type="number"
-          value={numberOfRooms}
+          value={numberOfRooms !== undefined? numberOfRooms : ""}
           onChange={(e) => setNumberOfRooms(Number(e.target.value))}
           placeholder="Number of Rooms"
         />
@@ -505,19 +513,19 @@ const FlatsTable: React.FC = () => {
         />
         <input
           type="number"
-          value={houseYear}
+          value={houseYear !== undefined? houseYear : ""}
           onChange={(e) => setHouseYear(Number(e.target.value))}
           placeholder="House Year"
         />
         <input
           type="number"
-          value={numberOfFloors}
+          value={numberOfFloors !== undefined? numberOfFloors : ""}
           onChange={(e) => setNumberOfFloors(Number(e.target.value))}
           placeholder="Number of Floors"
         />
         <input
           type="number"
-          value={numberOfLifts}
+          value={numberOfLifts !== undefined? numberOfLifts : ""}
           onChange={(e) => setNumberOfLifts(Number(e.target.value))}
           placeholder="Number of Lifts"
         />
