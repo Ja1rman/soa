@@ -11,6 +11,7 @@ import './Flat.css';
 import { parseFlatsFromXml, parseFlatFromXml } from './services/parsers';
 
 const API_URL = 'https://89.169.129.229';
+const API_URL2 = 'https://89.169.129.229:8443';
 
 
 const fetchFlats = async (page: number, sortFields: string, filterFields: string): Promise<Flat[]> => {
@@ -70,7 +71,7 @@ const FlatsTable: React.FC = () => {
   }
   const handleFetchTotalCost = async () => {
     try {
-      const response = await fetch(API_URL + `/agency/get-total-cost`);
+      const response = await fetch(API_URL2 + `/agency/get-total-cost`);
       if (!response.ok) {
         throw new Error('Ошибка при получении данных');
       }
@@ -116,7 +117,7 @@ const FlatsTable: React.FC = () => {
   };
   const handleMoneyBalconyFilter = async (cheapest: string, withBalcony: string) => {
     try {
-      const response = await fetch(API_URL + `/agency/find-with-balcony/${cheapest}/${withBalcony}`);
+      const response = await fetch(API_URL2 + `/agency/find-with-balcony/${cheapest}/${withBalcony}`);
       const xmlResponse = await response.text();
 
       const parsedFlats: Flat[] = [await parseFlatFromXml(xmlResponse)];
