@@ -28,25 +28,7 @@ export class Flat {
         view?: View,
         house?: House
     ) {
-        if (id === null || id <= 0) {
-            throw new Error('ID must be greater than 0 and cannot be null');
-        }
-        if (!name || name.trim() === '') {
-            throw new Error('Name cannot be null or empty');
-        }
-        if (!coordinates) {
-            throw new Error('Coordinates cannot be null');
-        }
-        if (area <= 0 || area > 889) {
-            throw new Error('Area must be greater than 0 and less than or equal to 889');
-        }
-        if (numberOfRooms <= 0 || numberOfRooms > 19) {
-            throw new Error('Number of rooms must be greater than 0 and less than or equal to 19');
-        }
-        if (!transport) {
-            throw new Error('Transport cannot be null');
-        }
-
+       
         this.id = id;
         this.name = name;
         this.coordinates = coordinates;
