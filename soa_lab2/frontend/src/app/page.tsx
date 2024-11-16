@@ -11,7 +11,7 @@ import './Flat.css';
 import { parseFlatsFromXml, parseFlatFromXml } from './services/parsers';
 
 const API_URL = 'https://89.169.129.229';
-const API_URL2 = 'https://89.169.129.229:8443';
+const API_URL2 = 'https://89.169.129.229:444';
 
 
 const fetchFlats = async (page: number, sortFields: string, filterFields: string): Promise<Flat[]> => {
@@ -30,8 +30,6 @@ const fetchFlats = async (page: number, sortFields: string, filterFields: string
   const xmlResponse = await response.text();
   return parseFlatsFromXml(xmlResponse);
 };
-
-
 
 const FlatsTable: React.FC = () => {
   const [flats, setFlats] = useState<Flat[]>([]);
@@ -91,8 +89,6 @@ const FlatsTable: React.FC = () => {
       console.error(err);
     }
   };
-
-
 
   const handleFetchRoomCount = async () => {
     try {
@@ -154,10 +150,23 @@ const FlatsTable: React.FC = () => {
     const { name, value } = event.target;
 
     if (editFormData) {
-      setEditFormData({
-        ...editFormData,
-        [name]: value,
-      });
+      const fieldPath = name.split('.'); // Разделяем имя на части, например, 'coordinates.x'
+      if (fieldPath.length === 2) {
+        const [parentField, childField] = fieldPath;
+        setEditFormData({
+          ...editFormData,
+          [parentField]: {
+            ...(editFormData as any)[parentField], // Сохраняем остальные поля объекта
+            [childField]: isNaN(+value) ? value : +value, // Обновляем конкретное вложенное поле
+          },
+        });
+      } else {
+        setEditFormData({
+          ...editFormData,
+          [name]: isNaN(+value) ? value : +value, // Простое поле
+        });
+      }
+
     }
   };
   const handleSave = async () => {

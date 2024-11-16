@@ -28,7 +28,6 @@ export class Flat {
         view?: View,
         house?: House
     ) {
-       
         this.id = id;
         this.name = name;
         this.coordinates = coordinates;

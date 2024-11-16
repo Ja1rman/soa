@@ -10,8 +10,6 @@ export class House {
         name?: string,
         year?: number
     ) {
-       
-
         this.name = name;
         this.year = year;
         this.numberOfFloors = numberOfFloors;
